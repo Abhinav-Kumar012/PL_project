@@ -1,8 +1,8 @@
 # PL project
 
 ## Problem statement
-Exploring Meta-Programming
-TYPE: (study)
+Exploring Meta-Programming \\
+TYPE: (study) \\
 Meta-programming is the art of writing code that writes or manipulates other code (including
 itself).
 - Analyze the meta-programming features of languages like Ruby and Lisp.
