@@ -3,7 +3,7 @@ class OrderStatus
     @order_no = order_no
     @status = "initiated"
   end
-  STATUSES = ["initiated","dispatched","out_for_delivery","delivered"]
+  STATUSES = ["initiated","dispatched","out_for_delivery","delivered","cancelled"]
   STATUSES.each do |status|
     define_method("is_#{status}?") do
       @status == status
@@ -22,7 +22,8 @@ def main
   pp(order_123.is_initiated?())
   order_123.to_dispatched()
   pp(order_123.is_dispatched?())
-  pp(order_123.is_delivered?())
+  order_123.to_cancelled()
+  pp(order_123.is_cancelled?())
 end
 
 if __FILE__ == $0
