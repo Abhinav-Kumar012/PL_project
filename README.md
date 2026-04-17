@@ -31,5 +31,8 @@ When this list based AST is passed to eval, only then is the function evaluated.
 ## Type Issues
 
 - Fundamental tussle between MetaProgramming and Typing- the circular loop
-- The two-phase compilation of templates in C++
+- The two-phase compilation of templates in C++, the notoriety of second phase bugs and C++ Concepts
 - Turing Completeness as a reducible problem
+
+
+---
