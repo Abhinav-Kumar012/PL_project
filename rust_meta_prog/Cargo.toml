@@ -1,0 +1,17 @@
+[package]
+name = "rust_meta_prog"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[profile.release]
+lto = true
+strip = true
+opt-level = 3
+panic = "abort"
+incremental = true
+codegen-units = 1
+
+[profile.dev]
+incremental = true
