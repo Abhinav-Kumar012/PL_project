@@ -18,8 +18,8 @@ mod decl_macros {
         };
     }
 
-    #[macro_export]
-    macro_rules! getter_and_setter {
+	#[macro_export]
+	macro_rules! getter_and_setter {
         ($struct_vis : vis struct $struct_id : ident {$($field_vis : vis $field : ident : $type : ty),* $(,)?}) => {
             $struct_vis struct $struct_id {
                 $(
@@ -52,6 +52,5 @@ mod decl_macros {
     }
 
 	pub(crate) use area_and_perimeter;
-    pub(crate) use getter_and_setter;
-
+	pub(crate) use getter_and_setter;
 }
