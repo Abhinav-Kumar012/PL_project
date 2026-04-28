@@ -5,6 +5,7 @@ use syn::parse::{Parse, ParseStream};
 struct Comp {
 	mapping: Mapping,
 	for_if_clause: ForIfCaluse,
+	additional_for_if_clauses: Vec<ForIfCaluse>,
 }
 
 impl Parse for Comp {
@@ -12,6 +13,7 @@ impl Parse for Comp {
 		Ok(Self {
 			mapping: input.parse()?,
 			for_if_clause: input.parse()?,
+			additional_for_if_clauses: parse_one_or_more(input),
 		})
 	}
 }
@@ -21,22 +23,61 @@ impl ToTokens for Comp {
 		&self,
 		tokens: &mut TokenStream2,
 	) {
-		let Mapping(mp) = &self.mapping;
-		let ForIfCaluse {
-			pattern,
-			expression : sequence,
-			conditions,
-		} = &self.for_if_clause;
+		// let Mapping(mp) = &self.mapping;
+		// let ForIfCaluse {
+		// 	pattern,
+		// 	expression : sequence,
+		// 	conditions,
+		// } = &self.for_if_clause;
 
+		// tokens.extend( quote! {
+		// 	::core::iter::IntoIterator::into_iter(#sequence).flat_map(
+		// 		|#pattern| {
+		// 			(true #(&& (#conditions))*).then(|| #mp)
+		// 		}
+		// 	)
+		// });
+		let all_for_if_clauses =
+			std::iter::once(&self.for_if_clause).chain(&self.additional_for_if_clauses);
+		let mut innermost_to_outermost = all_for_if_clauses.rev();
 
+		let mut output = {
+			// innermost is a special case--here we do the mapping
+			let innermost = innermost_to_outermost
+				.next()
+				.expect("We know we have at least one ForIfClause (self.for_if_clause)");
+			let ForIfCaluse {
+				pattern,
+				expression: sequence,
+				conditions,
+			} = innermost;
 
-		tokens.extend( quote! {
-			core::iter::IntoIterator::into_iter(#sequence).filter_map(
-				|#pattern| {
-					(true #(&& (#conditions))*).then(|| #mp)
-				}
-			)
+			let Mapping(mapping) = &self.mapping;
+
+			quote! {
+				core::iter::IntoIterator::into_iter(#sequence).filter_map(move |#pattern| {
+					(true #(&& (#conditions))*).then(|| #mapping)
+				})
+			}
+		};
+
+		// Now we walk through the rest of the ForIfClauses, wrapping the current `output` in a new layer of iteration each time.
+		// We also add an extra call to '.flatten()'.
+		output = innermost_to_outermost.fold(output, |current_output, next_layer| {
+			let ForIfCaluse {
+				pattern,
+				expression: sequence,
+				conditions,
+			} = next_layer;
+			quote! {
+				core::iter::IntoIterator::into_iter(#sequence).filter_map(|#pattern| {
+					(true #(&& (#conditions))*).then(|| #current_output)
+				})
+				.flatten()
+			}
 		});
+
+		tokens.extend(output)
 	}
 }
 struct Mapping(syn::Expr);
@@ -48,7 +89,10 @@ impl Parse for Mapping {
 }
 
 impl ToTokens for Mapping {
-	fn to_tokens(&self, tokens: &mut TokenStream2) {
+	fn to_tokens(
+		&self,
+		tokens: &mut TokenStream2,
+	) {
 		self.0.to_tokens(tokens);
 	}
 }
@@ -93,7 +137,10 @@ impl Parse for Pattern {
 }
 
 impl ToTokens for Pattern {
-	fn to_tokens(&self, tokens: &mut TokenStream2) {
+	fn to_tokens(
+		&self,
+		tokens: &mut TokenStream2,
+	) {
 		self.0.to_tokens(tokens);
 	}
 }
@@ -108,7 +155,10 @@ impl Parse for Condition {
 }
 
 impl ToTokens for Condition {
-	fn to_tokens(&self, tokens: &mut TokenStream2) {
+	fn to_tokens(
+		&self,
+		tokens: &mut TokenStream2,
+	) {
 		self.0.to_tokens(tokens);
 	}
 }
@@ -116,5 +166,5 @@ impl ToTokens for Condition {
 #[proc_macro]
 pub fn comp(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	let ir = syn::parse_macro_input!(input as Comp);
-	quote!{ #ir }.into()
+	quote! { #ir }.into()
 }
