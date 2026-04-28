@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 pastey = "0.2.2"
-
+proc_lib = {path = "proc_lib"}
 
 [profile.release]
 lto = true
