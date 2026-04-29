@@ -1,5 +1,5 @@
 mod decl_macros;
-use proc_lib::comp;
+use proc_lib::{comp, log_time};
 struct Square;
 area_and_perimeter!(Square, 10, 21, 30);
 getter_and_setter!(
@@ -11,12 +11,16 @@ getter_and_setter!(
 	}
 );
 
+#[log_time]
+fn sleep_for(secs : u64) -> u64 {
+	let dur = std::time::Duration::from_secs(secs);
+	let st = std::time::Instant::now();
+	std::thread::sleep(dur);
+	return st.elapsed().as_secs()
+}
+
 fn main() {
-	let xt = vec![1, 2, 3, 4, 5];
-	let xt2 = vec![2, 3, 4, 55];
-	let p: Vec<_> =
-		comp![(x,z)for x in xt if x > 2 if x < 5 for z in xt2.clone() if z < 4].collect();
-	println!("{p:?}");
+	_ = sleep_for(5);
 }
 
 #[cfg(test)]
