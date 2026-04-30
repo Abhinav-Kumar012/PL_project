@@ -1,5 +1,7 @@
 mod decl_macros;
-use proc_lib::{comp, log_time};
+mod traits;
+use proc_lib::{comp, log_time,MyDescribe};
+use traits::traits_ex::MyDescribe;
 struct Square;
 area_and_perimeter!(Square, 10, 21, 30);
 getter_and_setter!(
@@ -11,6 +13,18 @@ getter_and_setter!(
 	}
 );
 
+#[derive(MyDescribe,Default)]
+pub enum Vehicle {
+	#[default]
+	Car,
+	Truck,
+	Bike,
+	Train,
+	Ship,
+	AirPlane
+}
+
+
 #[log_time]
 fn sleep_for(secs : u64) -> u64 {
 	let dur = std::time::Duration::from_secs(secs);
@@ -20,7 +34,7 @@ fn sleep_for(secs : u64) -> u64 {
 }
 
 fn main() {
-	_ = sleep_for(5);
+	println!("{}", sleep_for(5));
 }
 
 #[cfg(test)]
@@ -53,4 +67,10 @@ mod tests {
 			comp![(x,z) for x in xt if x > 2 if x < 5 for z in xt2.clone() if z < 4].collect();
 		assert_eq!(p, [(3, 2), (3, 3), (4, 2), (4, 3)]);
 	}
+
+	#[test]
+	fn test_derive_macro() {
+		assert_eq!(Vehicle::describe(),"Vehicle has 6 variants")
+	}
+
 }
