@@ -30,14 +30,9 @@ pub(crate) mod derive_macro_helper {
 			&self,
 			tokens: &mut TokenStream2,
 		) {
-			let id = match &self {
-				Self::EnumItem(e) => &e.0.ident,
-				Self::StructItem(s) => &s.0.ident,
-			};
-
-			let token_main = match &self {
-				Self::EnumItem(e) => quote! { #e },
-				Self::StructItem(s) => quote! { #s },
+			let (id, token_main) = match &self {
+				Self::EnumItem(e) => (&e.0.ident, quote! {#e}),
+				Self::StructItem(s) => (&s.0.ident, quote! {#s}),
 			};
 
 			let tk = quote! {
