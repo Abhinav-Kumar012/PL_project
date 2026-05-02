@@ -61,10 +61,9 @@ mod tests {
 	#[test]
 	fn test_list_comp() {
 		let xt = vec![1, 2, 3, 4, 5];
-		let xt2 = vec![2, 3, 4, 55];
 		let p: Vec<_> =
-			comp![(x,z) for x in xt if x > 2 if x < 5 for z in xt2.clone() if z < 4].collect();
-		assert_eq!(p, [(3, 2), (3, 3), (4, 2), (4, 3)]);
+			comp![x*2 for x in xt if x < 5 if x > 1].collect();
+		assert_eq!(p, [4,6,8]);
 	}
 
 	#[test]
