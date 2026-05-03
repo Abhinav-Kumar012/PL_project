@@ -37,47 +37,6 @@ pub(crate) mod comprehension {
 					}
 				)
 			});
-			// let all_for_if_clauses =
-			// 	std::iter::once(&self.for_if_clause).chain(&self.additional_for_if_clauses);
-			// let mut innermost_to_outermost = all_for_if_clauses.rev();
-
-			// let mut output = {
-			// 	// innermost is a special case--here we do the mapping
-			// 	let innermost = innermost_to_outermost
-			// 		.next()
-			// 		.expect("We know we have at least one ForIfClause (self.for_if_clause)");
-			// 	let ForIfCaluse {
-			// 		pattern,
-			// 		expression: sequence,
-			// 		conditions,
-			// 	} = innermost;
-
-			// 	let Mapping(mapping) = &self.mapping;
-
-			// 	quote! {
-			// 		core::iter::IntoIterator::into_iter(#sequence).filter_map(move |#pattern| {
-			// 			(true #(&& (#conditions))*).then(|| #mapping)
-			// 		})
-			// 	}
-			// };
-
-			// // Now we walk through the rest of the ForIfClauses, wrapping the current `output` in a new layer of iteration each time.
-			// // We also add an extra call to '.flatten()'.
-			// output = innermost_to_outermost.fold(output, |current_output, next_layer| {
-			// 	let ForIfCaluse {
-			// 		pattern,
-			// 		expression: sequence,
-			// 		conditions,
-			// 	} = next_layer;
-			// 	quote! {
-			// 		core::iter::IntoIterator::into_iter(#sequence).filter_map(|#pattern| {
-			// 			(true #(&& (#conditions))*).then(|| #current_output)
-			// 		})
-			// 		.flatten()
-			// 	}
-			// });
-
-			// tokens.extend(output)
 		}
 	}
 	struct Mapping(syn::Expr);
